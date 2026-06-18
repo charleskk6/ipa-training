@@ -49,12 +49,23 @@ src/
   views/                  # Learn, Practice, Flashcards, MinimalPairs, Progress
 ```
 
-## Plugging in real audio
+## Audio
 
-Model-sound buttons reference placeholder paths like `/audio/ipa/iː.mp3`
-(see the `audioPath` field in `src/data/ipaData.ts`). Drop matching files into
-`public/audio/ipa/` and they'll play automatically. Until then the app falls
-back to the browser's British English speech voice.
+The repo ships generated British-English model clips in `public/audio/ipa/`,
+one MP3 per sound (named to match the `audioPath` field in
+`src/data/ipaData.ts`, e.g. `iː.mp3`). They're synthesised offline from each
+sound's first example word with the espeak-ng WASM build (`text2wav`) and
+encoded to MP3 with a pure-JS LAME encoder — no network or paid service needed.
+
+Regenerate them at any time with:
+
+```bash
+npm run generate:audio
+```
+
+To use higher-quality human recordings instead, just replace the files in
+`public/audio/ipa/` with your own (keeping the same file names). If a clip is
+ever missing, the app falls back to the browser's British English speech voice.
 
 ## Plugging in real pronunciation scoring
 

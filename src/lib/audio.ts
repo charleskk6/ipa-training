@@ -3,11 +3,11 @@ import type { IPASound } from "../types";
 /**
  * Plays the model sound for an IPA entry.
  *
- * MVP behaviour: try to play the placeholder audio file at `sound.audioPath`.
- * Because those files don't ship yet, we fall back to the browser's
- * SpeechSynthesis voice (reading an example word) so the button still does
- * something useful. Once real clips are dropped into `public/audio/ipa/`, the
- * file will load and the fallback won't be reached.
+ * Behaviour: try to play the audio file at `sound.audioPath`. The repo ships
+ * generated British-English clips in `public/audio/ipa/` (see
+ * `scripts/generate-audio.mjs`), so this normally succeeds. If a file is
+ * missing or can't play, we fall back to the browser's SpeechSynthesis voice
+ * (reading an example word) so the button still does something useful.
  */
 export async function playModelSound(sound: IPASound): Promise<void> {
   const ok = await tryPlayFile(sound.audioPath);
