@@ -15,14 +15,26 @@ import { exampleWord, wordAudioPath } from "./audioPaths";
 
 /** Play the isolated phoneme for a sound (the "sound itself"). */
 export async function playPhoneme(sound: IPASound): Promise<void> {
-  const ok = await tryPlayFile(sound.audioPath);
+  const ok = await tryPlayFile(resolveAudioUrl(sound.audioPath));
   if (!ok) speak(exampleWord(sound));
 }
 
 /** Play the full example word for a sound. */
 export async function playWord(sound: IPASound): Promise<void> {
-  const ok = await tryPlayFile(wordAudioPath(sound));
+  const ok = await tryPlayFile(resolveAudioUrl(wordAudioPath(sound)));
   if (!ok) speak(exampleWord(sound));
+}
+
+/**
+ * Resolve a root-relative audio path (e.g. "/audio/ipa/iː.mp3") against the
+ * app's deployment base so it works when hosted at a sub-path (e.g. GitHub
+ * Pages project sites at "/ipa-training/"). Without this the absolute path
+ * points at the domain root, 404s, and playback silently falls back to the
+ * speech voice for every clip.
+ */
+function resolveAudioUrl(path: string): string {
+  const base = import.meta.env.BASE_URL || "/"; // "./", "/ipa-training/" or "/"
+  return base.replace(/\/$/, "") + path;
 }
 
 function tryPlayFile(src: string): Promise<boolean> {
