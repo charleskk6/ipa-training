@@ -1,6 +1,6 @@
 import type { IPASound } from "../types";
 import { categoryStyles, cx } from "../lib/ui";
-import { playModelSound } from "../lib/audio";
+import { playPhoneme } from "../lib/audio";
 
 type Props = {
   sound: IPASound;
@@ -49,7 +49,7 @@ export default function IPACard({ sound, onSelect, selected, badge }: Props) {
         tabIndex={-1}
         onClick={(e) => {
           e.stopPropagation();
-          void playModelSound(sound);
+          void playPhoneme(sound);
         }}
         className={cx(
           "mt-2 inline-flex h-7 w-7 items-center justify-center rounded-full text-sm opacity-80 transition group-hover:opacity-100",

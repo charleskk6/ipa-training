@@ -51,11 +51,17 @@ src/
 
 ## Audio
 
-The repo ships generated British-English model clips in `public/audio/ipa/`,
-one MP3 per sound (named to match the `audioPath` field in
-`src/data/ipaData.ts`, e.g. `iː.mp3`). They're synthesised offline from each
-sound's first example word with the espeak-ng WASM build (`text2wav`) and
-encoded to MP3 with a pure-JS LAME encoder — no network or paid service needed.
+Every sound has **two** model clips, played by two separate buttons:
+
+- **Sound** — the isolated phoneme on its own (e.g. just /ɪ/), in
+  `public/audio/ipa/<symbol>.mp3`.
+- **Word** — the first example word read in full (e.g. "ship"), in
+  `public/audio/words/<word>.mp3`.
+
+All clips are generated offline with the espeak-ng WASM build (`text2wav`) using
+a British English voice and encoded to MP3 with a pure-JS LAME encoder — no
+network or paid service needed. Isolated sounds use espeak-ng's Kirshenbaum
+phoneme notation; words are synthesised from the dataset's first example.
 
 Regenerate them at any time with:
 
@@ -63,9 +69,10 @@ Regenerate them at any time with:
 npm run generate:audio
 ```
 
-To use higher-quality human recordings instead, just replace the files in
-`public/audio/ipa/` with your own (keeping the same file names). If a clip is
-ever missing, the app falls back to the browser's British English speech voice.
+To use higher-quality human recordings instead, replace the files in
+`public/audio/ipa/` and `public/audio/words/` with your own (keeping the same
+file names). If a clip is ever missing, the app falls back to the browser's
+British English speech voice.
 
 ## Plugging in real pronunciation scoring
 

@@ -19,7 +19,11 @@ export type IPASound = {
   examples: string[];
   /** Symbols of sounds learners commonly confuse this one with. */
   commonConfusions: string[];
-  /** Placeholder path to the model audio clip. */
+  /**
+   * Path to the isolated phoneme clip (the "sound itself"), e.g.
+   * /audio/ipa/iː.mp3. The full example-word clip is derived from the first
+   * example via `lib/audioPaths.ts`.
+   */
   audioPath: string;
 };
 

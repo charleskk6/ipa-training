@@ -3,7 +3,7 @@ import { ALL_SOUNDS } from "../data/ipaData";
 import type { Difficulty, IPASound } from "../types";
 import { getProgressMap, recordDifficulty, touchStreak } from "../lib/storage";
 import { categoryStyles, cx } from "../lib/ui";
-import PlayButton from "../components/PlayButton";
+import SoundButtons from "../components/SoundButtons";
 
 /**
  * Pick the next card using weakness weights from storage so struggling sounds
@@ -109,8 +109,8 @@ export default function FlashcardsView() {
         </button>
 
         {/* Controls */}
-        <div className="mt-4 flex items-center justify-center gap-3">
-          <PlayButton sound={card} label="Play" />
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+          <SoundButtons sound={card} />
           <button
             type="button"
             onClick={() => setFlipped((f) => !f)}
