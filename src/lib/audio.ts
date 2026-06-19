@@ -1,17 +1,28 @@
 import type { IPASound } from "../types";
+import { exampleWord, wordAudioPath } from "./audioPaths";
 
 /**
- * Plays the model sound for an IPA entry.
+ * Audio playback for IPA entries. There are two distinct models:
  *
- * Behaviour: try to play the audio file at `sound.audioPath`. The repo ships
- * generated British-English clips in `public/audio/ipa/` (see
- * `scripts/generate-audio.mjs`), so this normally succeeds. If a file is
- * missing or can't play, we fall back to the browser's SpeechSynthesis voice
- * (reading an example word) so the button still does something useful.
+ *  - playPhoneme: the isolated sound on its own (e.g. just /ɪ/).
+ *  - playWord:    the first example word read in full (e.g. "ship").
+ *
+ * Both try a generated MP3 first (see scripts/generate-audio.mjs); if the file
+ * is missing or can't play, they fall back to the browser's SpeechSynthesis
+ * voice so the button still does something useful. (For the phoneme there is no
+ * good speech fallback, so it reads the example word as a last resort.)
  */
-export async function playModelSound(sound: IPASound): Promise<void> {
+
+/** Play the isolated phoneme for a sound (the "sound itself"). */
+export async function playPhoneme(sound: IPASound): Promise<void> {
   const ok = await tryPlayFile(sound.audioPath);
-  if (!ok) speakFallback(sound);
+  if (!ok) speak(exampleWord(sound));
+}
+
+/** Play the full example word for a sound. */
+export async function playWord(sound: IPASound): Promise<void> {
+  const ok = await tryPlayFile(wordAudioPath(sound));
+  if (!ok) speak(exampleWord(sound));
 }
 
 function tryPlayFile(src: string): Promise<boolean> {
@@ -37,26 +48,16 @@ function tryPlayFile(src: string): Promise<boolean> {
   });
 }
 
-function speakFallback(sound: IPASound): void {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  const word = sound.examples[0] ?? sound.name;
-  const utter = new SpeechSynthesisUtterance(word);
-  utter.lang = "en-GB";
-  utter.rate = 0.85;
-  // Prefer a British English voice when one is installed.
-  const voices = window.speechSynthesis.getVoices();
-  const gb = voices.find((v) => v.lang === "en-GB");
-  if (gb) utter.voice = gb;
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(utter);
+/** Speak an arbitrary word with a British English voice when available. */
+export function speakWord(word: string): void {
+  speak(word, 0.9);
 }
 
-/** Speak an arbitrary word (used by minimal-pair listening exercises). */
-export function speakWord(word: string): void {
+function speak(text: string, rate = 0.85): void {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  const utter = new SpeechSynthesisUtterance(word);
+  const utter = new SpeechSynthesisUtterance(text);
   utter.lang = "en-GB";
-  utter.rate = 0.9;
+  utter.rate = rate;
   const gb = window.speechSynthesis.getVoices().find((v) => v.lang === "en-GB");
   if (gb) utter.voice = gb;
   window.speechSynthesis.cancel();

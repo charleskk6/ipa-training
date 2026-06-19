@@ -1,9 +1,10 @@
-// Generates model-sound MP3s for every IPA entry into public/audio/ipa/.
+// Generates model audio for every IPA entry into:
+//   public/audio/ipa/<symbol>.mp3   -> the isolated phoneme ("the sound itself")
+//   public/audio/words/<word>.mp3   -> the first example word, read in full
 //
 // Audio is synthesised offline with the espeak-ng WASM build (`text2wav`) using
 // a British English voice, then encoded to MP3 with a pure-JS LAME encoder.
-// Each clip is the sound's first example word — a clear, natural model that
-// contains the target phoneme.
+// Isolated sounds use espeak-ng's Kirshenbaum phoneme notation via [[...]].
 //
 // Run with:  npm run generate:audio
 // (uses Node's --experimental-strip-types to import the TypeScript dataset)
@@ -14,10 +15,28 @@ import { fileURLToPath } from "node:url";
 import text2wav from "text2wav";
 import * as lamejs from "@breezystack/lamejs";
 import { ALL_SOUNDS } from "../src/data/ipaData.ts";
+import { wordSlug } from "../src/lib/audioPaths.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUT_DIR = join(__dirname, "..", "public", "audio", "ipa");
+const PUBLIC = join(__dirname, "..", "public");
+const IPA_DIR = join(PUBLIC, "audio", "ipa");
+const WORDS_DIR = join(PUBLIC, "audio", "words");
 const VOICE = "en-gb";
+
+/**
+ * IPA symbol -> espeak-ng Kirshenbaum phoneme string (passed inside [[...]]).
+ * Verified to render for every symbol in the dataset.
+ */
+const KIRSHENBAUM = {
+  // vowels
+  iː: "i:", ɪ: "I", e: "E", æ: "a", ʌ: "V", ɑː: "A:", ɒ: "0", ɔː: "O:",
+  ʊ: "U", uː: "u:", ɜː: "3:", ə: "@", eɪ: "eI", aɪ: "aI", ɔɪ: "OI",
+  əʊ: "@U", aʊ: "aU", ɪə: "I@", eə: "e@", ʊə: "U@",
+  // consonants
+  p: "p", b: "b", t: "t", d: "d", k: "k", g: "g", f: "f", v: "v",
+  θ: "T", ð: "D", s: "s", z: "z", ʃ: "S", ʒ: "Z", h: "h", tʃ: "tS",
+  dʒ: "dZ", m: "m", n: "n", ŋ: "N", l: "l", r: "r", w: "w", j: "j",
+};
 
 /** Pull channel/rate/bit-depth and the PCM data chunk out of a WAV buffer. */
 function parseWav(buf) {
@@ -72,19 +91,41 @@ async function synthesiseMp3(text) {
 }
 
 async function main() {
-  mkdirSync(OUT_DIR, { recursive: true });
-  let ok = 0;
+  mkdirSync(IPA_DIR, { recursive: true });
+  mkdirSync(WORDS_DIR, { recursive: true });
+
+  let phonemes = 0;
+  const wordsDone = new Set();
+  let words = 0;
+
   for (const sound of ALL_SOUNDS) {
+    // 1) Isolated phoneme.
+    const kb = KIRSHENBAUM[sound.symbol];
+    if (!kb) throw new Error(`no Kirshenbaum mapping for /${sound.symbol}/`);
+    const phonemeFile = basename(sound.audioPath); // e.g. "iː.mp3"
+    const phonemeMp3 = await synthesiseMp3(`[[${kb}]]`);
+    writeFileSync(join(IPA_DIR, phonemeFile), phonemeMp3);
+    phonemes++;
+
+    // 2) Example word (deduplicated across sounds that share a word).
     const word = sound.examples[0] ?? sound.name;
-    const fileName = basename(sound.audioPath); // e.g. "iː.mp3"
-    const mp3 = await synthesiseMp3(word);
-    writeFileSync(join(OUT_DIR, fileName), mp3);
-    ok++;
+    const slug = wordSlug(word);
+    if (!wordsDone.has(slug)) {
+      const wordMp3 = await synthesiseMp3(word);
+      writeFileSync(join(WORDS_DIR, `${slug}.mp3`), wordMp3);
+      wordsDone.add(slug);
+      words++;
+    }
+
     process.stdout.write(
-      `  /${sound.symbol}/  "${word}" -> ${fileName} (${mp3.length} bytes)\n`
+      `  /${sound.symbol}/  sound=${phonemeFile}  word="${word}" -> ${slug}.mp3\n`
     );
   }
-  console.log(`\nDone: wrote ${ok} MP3 files to public/audio/ipa/`);
+
+  console.log(
+    `\nDone: ${phonemes} phoneme clips in public/audio/ipa/, ` +
+      `${words} word clips in public/audio/words/`
+  );
 }
 
 main().catch((err) => {

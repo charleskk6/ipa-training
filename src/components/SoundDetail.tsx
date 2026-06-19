@@ -1,7 +1,7 @@
 import type { IPASound } from "../types";
 import { SOUND_BY_SYMBOL } from "../data/ipaData";
 import { categoryStyles, cx } from "../lib/ui";
-import PlayButton from "./PlayButton";
+import SoundButtons from "./SoundButtons";
 
 type Props = {
   sound: IPASound;
@@ -36,7 +36,7 @@ export default function SoundDetail({ sound, onSelectSymbol }: Props) {
           <h2 className="mt-2 text-xl font-bold text-slate-900">{sound.name}</h2>
           <p className="mt-1 text-sm text-slate-600">{sound.description}</p>
           <div className="mt-3">
-            <PlayButton sound={sound} />
+            <SoundButtons sound={sound} />
           </div>
         </div>
       </div>

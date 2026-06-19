@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ALL_SOUNDS, VOWELS, CONSONANTS, SOUND_BY_SYMBOL } from "../data/ipaData";
 import type { ComparisonFeedback } from "../types";
-import PlayButton from "../components/PlayButton";
+import SoundButtons from "../components/SoundButtons";
 import RecorderPanel from "../components/RecorderPanel";
 import { comparePronunciation } from "../lib/comparePronunciation";
 import { addResult, recordAttempt, touchStreak } from "../lib/storage";
@@ -115,7 +115,7 @@ export default function PracticeView() {
               <p className="max-w-md text-sm text-slate-600">{sound.mouthTip}</p>
             </div>
           </div>
-          <PlayButton sound={sound} />
+          <SoundButtons sound={sound} />
         </div>
 
         <div className="mt-5">

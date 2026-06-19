@@ -1,21 +1,23 @@
 # Model sound audio
 
-This folder holds the model pronunciation clips played by the **Learn** and
-**Practice** modes.
+This folder holds the **isolated phoneme** clips played by the "Sound" button
+(the IPA sound on its own). Full **example-word** clips played by the "Word"
+button live alongside it in `../words/`.
 
-The app references files by IPA symbol, e.g.:
+Files are referenced by IPA symbol, e.g.:
 
 ```
-/audio/ipa/iː.mp3
-/audio/ipa/θ.mp3
+/audio/ipa/iː.mp3     <- isolated /iː/
+/audio/ipa/θ.mp3      <- isolated /θ/
+/audio/words/ship.mp3 <- the word "ship"
 ```
 
-The exact path for each sound comes from the `audioPath` field in
-`src/data/ipaData.ts`. To wire up real audio:
+The phoneme path for each sound comes from the `audioPath` field in
+`src/data/ipaData.ts`; the word path is derived from the first example word by
+`src/lib/audioPaths.ts`.
 
-1. Record or source one clip per sound (British English / RP).
-2. Save each clip here using the file name that matches its `audioPath`.
-3. No code changes are needed — the player picks them up automatically.
-
-Until real files are added, the player falls back to the browser's
-SpeechSynthesis voice (when available) so the app remains usable.
+These files are generated — see `scripts/generate-audio.mjs` and run
+`npm run generate:audio` to (re)create them. To use real human recordings,
+replace the files here (and in `../words/`) with the same file names; no code
+changes are needed. If a file is missing, the player falls back to the
+browser's SpeechSynthesis voice.
