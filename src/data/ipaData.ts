@@ -33,10 +33,10 @@ export const VOWELS: IPASound[] = [
     audioPath: audio("ɪ"),
   },
   {
-    symbol: "e",
+    symbol: "ɛ",
     category: "vowel",
     name: "Short E (DRESS)",
-    description: "A short front vowel — the 'e' in 'bed'.",
+    description: "A short front vowel — the 'ɛ' in 'bed'.",
     mouthTip:
       "Open your mouth a little more than for /ɪ/. Tongue mid-high and forward, lips relaxed.",
     examples: ["bed", "head", "many", "said", "friend"],
@@ -209,7 +209,7 @@ export const VOWELS: IPASound[] = [
     audioPath: audio("ɪə"),
   },
   {
-    symbol: "eə",
+    symbol: "ɛə",
     category: "vowel",
     name: "Diphthong (SQUARE)",
     description: "A gliding vowel from /e/ to schwa — the 'air' in 'hair'.",
@@ -217,7 +217,7 @@ export const VOWELS: IPASound[] = [
       "Start at /e/, then relax towards schwa. Lips neutral throughout.",
     examples: ["hair", "care", "there", "wear", "bear"],
     commonConfusions: ["ɪə", "ɜː"],
-    audioPath: audio("eə"),
+    audioPath: audio("ɛə"),
   },
   {
     symbol: "ʊə",
