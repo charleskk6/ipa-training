@@ -41,7 +41,7 @@ export const VOWELS: IPASound[] = [
       "Open your mouth a little more than for /ɪ/. Tongue mid-high and forward, lips relaxed.",
     examples: ["bed", "head", "many", "said", "friend"],
     commonConfusions: ["æ", "ɪ"],
-    audioPath: audio("e"),
+    audioPath: audio("ɛ"),
   },
   {
     symbol: "æ",
